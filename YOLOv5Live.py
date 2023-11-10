@@ -28,7 +28,7 @@ class ObjectDetection:
         Loads Yolo5 model from pytorch hub.
         :return: Trained Pytorch model.
         """
-        model = torch.hub.load('ultralytics/yolov5', 'yolov5s', pretrained=True)
+        model = torch.hub.load('ultralytics/yolov5', 'yolov5n', pretrained=True)
         return model
 
 
@@ -82,7 +82,7 @@ class ObjectDetection:
         and write the output into a new file.
         :return: void
         """
-        cap = cv2.VideoCapture(0)
+        cap = cv2.VideoCapture('rtsp://admin:BXLGEL@192.168.0.101:554/Streaming/Channels/101')
 
         while cap.isOpened():
             
@@ -90,12 +90,13 @@ class ObjectDetection:
             ret, frame = cap.read()
             if not ret:
                 break
-            results = self.score_frame(frame)
-            frame = self.plot_boxes(results, frame)
+            resized_frame = cv2.resize(frame, (1280, 720))
+            results = self.score_frame(resized_frame)
+            frame = self.plot_boxes(results, resized_frame)
             end_time = time.perf_counter()
             fps = 1 / np.round(end_time - start_time, 3)
-            cv2.putText(frame, f'FPS: {int(fps)}', (20,70), cv2.FONT_HERSHEY_SIMPLEX, 1.5, (0,255,0), 2)
-            cv2.imshow("img", frame)
+            cv2.putText(resized_frame, f'FPS: {int(fps)}', (20,70), cv2.FONT_HERSHEY_SIMPLEX, 1.5, (0,255,0), 2)
+            cv2.imshow("img", resized_frame)
 
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
